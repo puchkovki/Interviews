@@ -61,11 +61,12 @@ func main() {
 			log.Fatal("Open named pipe file error:", err)
 		}
 		for _, value := range argv {
-			fifo.WriteString(value)
+			writer.WriteString(value)
 		}
+		writer.Flush()
 		return
 	} else {
-		fmt.Println("Successfullt locked the file")
+		fmt.Println("Successfully locked the file")
 	}
 
 	os.Remove(pipe)
@@ -73,15 +74,16 @@ func main() {
 	if err != nil {
 		log.Fatal("Make named pipe file error:", err)
 	} else {
-		fmt.Println("Successfullt made named pipe")
+		fmt.Println("Successfully made named pipe")
 	}
-	fifo, err := os.OpenFile(pipe, os.O_CREATE, os.ModeNamedPipe) //ModeNamedPipe = named pipe(fifo)
+	fifo, err := os.OpenFile(pipe, os.O_RDWR|os.O_CREATE, os.ModeNamedPipe) //ModeNamedPipe = named pipe(fifo)
 	if err != nil {
 		log.Fatal("Open named pipe file error:", err)
 	} else {
-		fmt.Println("Successfullt opened named pipe")
+		fmt.Println("Successfully opened named pipe")
 	}
 	reader := bufio.NewReader(fifo)
+	writer := bufio.NewWriter(fifo)
 
 	channel := make(chan []string)
 
