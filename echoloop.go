@@ -14,15 +14,15 @@ import (
 
 func Cleaner(sigs chan os.Signal, file, fifo *os.File) {
 	<-sigs
-	os.Close(file)
-	name := file.Stat().Name()
-	os.Remove(name)
+	file.Close()
+	f, _ := file.Stat()
+	os.Remove(f.Name())
 
-	os.Close(fifo)
-	name = fifo.Stat().Name()
-	os.Remove(name)
-	
-	exit 0
+	fifo.Close()
+	f, _ = fifo.Stat()
+	os.Remove(f.Name())
+
+	os.Exit(0)
 }
 
 func echo(channel chan []string, quit chan bool) {
