@@ -34,6 +34,8 @@ func main() {
 	file, err := os.OpenFile("echoloop.lock", os.O_RDWR|os.O_CREATE, 0600) //read, write, not execute
 	if err != nil {
 		log.Fatal("Cannot open the file!", err)
+	} else {
+		fmt.Println("Successfully open the file")
 	}
 	//defer file.Close() useless piece of ...
 
@@ -48,16 +50,22 @@ func main() {
 			fifo.WriteString(value)
 		}
 		return
+	} else {
+		fmt.Println("Successfullt locked the file")
 	}
 
 	os.Remove(pipe)
 	err = syscall.Mkfifo(pipe, 0600)
 	if err != nil {
 		log.Fatal("Make named pipe file error:", err)
+	} else {
+		fmt.Println("Successfullt made named pipe")
 	}
 	fifo, err := os.OpenFile(pipe, os.O_CREATE, os.ModeNamedPipe) //ModeNamedPipe = named pipe(fifo)
 	if err != nil {
 		log.Fatal("Open named pipe file error:", err)
+	} else {
+		fmt.Println("Successfullt opened named pipe")
 	}
 	reader := bufio.NewReader(fifo)
 
