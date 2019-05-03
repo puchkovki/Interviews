@@ -141,8 +141,10 @@ func main() {
 			}
 		}
 
+		fmt.Println(line)
+
 		str := make([]string, 1)
-		str = append(str, line)
+		str[0] = line
 		channel <- str
 	}
 }
