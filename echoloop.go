@@ -15,8 +15,8 @@ import (
 func Cleaner(sigs chan os.Signal, file, fifo *os.File) {
 	<-sigs
 	if file != nil {
-		file.Close()
 		f, _ := file.Stat()
+		file.Close()
 		os.Remove(f.Name())
 	} else {
 		fmt.Println("file == nil")
@@ -24,8 +24,8 @@ func Cleaner(sigs chan os.Signal, file, fifo *os.File) {
 	}
 
 	if fifo != nil {
-		fifo.Close()
 		f, _ := fifo.Stat()
+		fifo.Close()
 		os.Remove(f.Name())
 	} else {
 		fmt.Println("fifo == nil")
