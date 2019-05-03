@@ -27,7 +27,7 @@
 
  
 
-## Язык программирования Golang
+## Как начать
 
 Данная программа была написана на языке программирования Golang. Для поддержки Golang терминалом следует скачать бинарные файлы по ссылке:
 https://golang.org/dl/
@@ -48,4 +48,4 @@ https://golang.org/dl/
 
 ## Автор
 
-* **Puchkov Kyryll** — *Acronis* — [puchkovki](https://github.com/puchkovki)
+* **Puchkov Kyryll** — [puchkovki](https://github.com/puchkovki)
