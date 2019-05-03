@@ -25,15 +25,12 @@ func Cleaner(sigs chan os.Signal, file, fifo *os.File) {
 	os.Exit(0)
 }
 
-func echo(channel chan []string, quit chan bool) {
+func echo(channel chan []string) {
 	firstborn := make([]string, 0)
 	for {
 		select {
 		case value := <-channel:
 			firstborn = append(firstborn, value...)
-		case <-quit:
-			fmt.Println("quit")
-			return
 		default:
 			fmt.Println(firstborn, "Okay")
 			time.Sleep(time.Second)
@@ -87,14 +84,13 @@ func main() {
 
 	channel := make(chan []string)
 
-	quit := make(chan bool, 1) //signal handler
-	sigs := make(chan os.Signal, 1)
+	sigs := make(chan os.Signal, 1) //signal handler
 	signal.Notify(sigs, os.Kill, os.Interrupt)
 	//Эта горутина будет заблокирована, пока мы не получим сигнал.
 	//При его получении, он будет выведен и мы оповестим программу о том, что она может прекратить свое выполнение.
 	go Cleaner(sigs, fifo, file)
 
-	go echo(channel, quit)
+	go echo(channel)
 	channel <- argv
 	for {
 		line, err := reader.ReadString('\n')
@@ -102,8 +98,7 @@ func main() {
 			if err == io.EOF {
 				break
 			} else {
-				fmt.Println(err)
-				return
+				log.Fatal(err)
 			}
 		}
 		str := make([]string, 1)
