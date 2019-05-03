@@ -12,33 +12,41 @@ import (
 	"time"
 )
 
-func Cleaner(sigs chan os.Signal, file, fifo *os.File) {
-	<-sigs
-	if file != nil {
-		f, _ := file.Stat()
-		file.Close()
+//Cleaner closes all required files and exits the program
+func Cleaner(sigs chan os.Signal, mutex, fifo *os.File) {
+	//Signal awaiting mode
+	if sigs != nil {
+		<-sigs
+	}
+
+	//Deleting the mutex file
+	if mutex != nil {
+		f, _ := mutex.Stat()
+		mutex.Close()
 		os.Remove(f.Name())
 	} else {
-		fmt.Println("file == nil")
+		fmt.Println("mutex file == nil")
 		return
 	}
 
+	//Deleting the fifo file
 	if fifo != nil {
 		f, _ := fifo.Stat()
 		fifo.Close()
 		os.Remove(f.Name())
 	} else {
-		fmt.Println("fifo == nil")
+		fmt.Println("fifo file == nil")
 		return
 	}
 
 	fmt.Println()
-
 	os.Exit(0)
 }
 
+//echo prints receined arguments
 func echo(channel chan []string) {
 	firstborn := make([]string, 0)
+
 	for {
 		select {
 		case value := <-channel:
@@ -52,76 +60,87 @@ func echo(channel chan []string) {
 
 func main() {
 	argv := os.Args[1:]
-	pipe := "Echoloop.pipe"
+	pipeName := "Echoloop.pipe"
 
-	file, err := os.OpenFile("echoloop.lock", os.O_RDWR|os.O_CREATE, 0600) //read, write, not execute
+	//Opening file, if it doesn't exist — create one
+	mutex, err := os.OpenFile("echoloop.lock", os.O_RDWR|os.O_CREATE, 0600) //read, write, not execute
 	if err != nil {
-		log.Fatal("Cannot open the file!", err)
-	} else {
-		fmt.Println("Successfully open the file")
+		Cleaner(nil, mutex, nil)
+		log.Fatal("Cannot open the mutex file!", err)
 	}
-	//defer file.Close() useless piece of ...
 
-	err = syscall.FcntlFlock(file.Fd(), syscall.F_SETLK, &syscall.Flock_t{Type: syscall.F_WRLCK, Pid: int32(os.Getpid())})
+	//Try to lock the mutex
+	err = syscall.FcntlFlock(mutex.Fd(), syscall.F_SETLK, &syscall.Flock_t{Type: syscall.F_WRLCK, Pid: int32(os.Getpid())})
+
+	//Not the firstborn
 	if err != nil {
-		fmt.Println("Cannot lock the file!")
-		fifo, err := os.OpenFile(pipe, os.O_RDWR|os.O_CREATE, os.ModeNamedPipe)
+		fmt.Println("Cannot lock the mutex file!")
+
+		//Putting arguments into the fifo file
+		fifo, err := os.OpenFile(pipeName, os.O_RDWR|os.O_CREATE, os.ModeNamedPipe)
 		if err != nil {
+			Cleaner(nil, mutex, fifo)
 			log.Fatal("Open named pipe file error:", err)
 		}
+
+		//Making a buffer to send arguments to the firstborn
 		writer := bufio.NewWriter(fifo)
 		for _, value := range argv {
 			writer.WriteString(value)
 		}
+
+		//Marking the end of the transfer
 		writer.WriteByte(0)
 		writer.Flush()
 		return
-	} else {
-		fmt.Println("Successfully locked the file")
 	}
 
-	os.Remove(pipe)
-	err = syscall.Mkfifo(pipe, 0600)
+	//Deleting the fifo file of it already exists
+	os.Remove(pipeName)
+
+	//Creating a fifo file
+	err = syscall.Mkfifo(pipeName, 0600)
 	if err != nil {
 		log.Fatal("Make named pipe file error:", err)
-	} else {
-		fmt.Println("Successfully made named pipe")
 	}
-	fifo, err := os.OpenFile(pipe, os.O_RDWR|os.O_CREATE, os.ModeNamedPipe) //ModeNamedPipe = named pipe(fifo)
+
+	//Opening fifo file
+	fifo, err := os.OpenFile(pipeName, os.O_RDWR|os.O_CREATE, os.ModeNamedPipe) //ModeNamedPipe = named pipe(fifo)
 	if err != nil {
 		log.Fatal("Open named pipe file error:", err)
-	} else {
-		fmt.Println("Successfully opened named pipe")
 	}
+
+	//Making a buffer to get arguments from bastards
 	reader := bufio.NewReader(fifo)
 
+	//Making a channel for sending and receiving strings to print
 	channel := make(chan []string)
 
-	sigs := make(chan os.Signal, 1) //signal handler
-	signal.Notify(sigs, os.Kill, os.Interrupt)
-	//Эта горутина будет заблокирована, пока мы не получим сигнал.
-	//При его получении, он будет выведен и мы оповестим программу о том, что она может прекратить свое выполнение.
-	go Cleaner(sigs, fifo, file)
+	//Making a channel for handling signals
+	sigs := make(chan os.Signal, 1)
 
+	//Catching os.Kill and os.Interrupt signals
+	signal.Notify(sigs, os.Kill, os.Interrupt)
+	go Cleaner(sigs, mutex, fifo)
+
+	//Printing
 	go echo(channel)
 	channel <- argv
+
+	//Receiving arguments from the fifo file
 	for {
 		line, err := reader.ReadString(0)
 		if err != nil {
 			if err == io.EOF {
 				break
 			} else {
+				Cleaner(sigs, mutex, fifo)
 				log.Fatal(err)
 			}
 		}
-		/*fmt.Println(line)*/
 
 		str := make([]string, 1)
 		str = append(str, line)
 		channel <- str
 	}
 }
-
-/*func FcntlFlock(fd uintptr, cmd int, lk *Flock_t) error{}
-syscall.F_SETLK acquire a lock
-parameters of F_SETLK: type Flock_t struct {Pid int32 — Getpid returns int*/
