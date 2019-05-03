@@ -65,7 +65,7 @@ func main() {
 	err = syscall.FcntlFlock(file.Fd(), syscall.F_SETLK, &syscall.Flock_t{Type: syscall.F_WRLCK, Pid: int32(os.Getpid())})
 	if err != nil {
 		fmt.Println("Cannot lock the file!")
-		fifo, err := os.OpenFile(pipe, os.O_CREATE, os.ModeNamedPipe)
+		fifo, err := os.OpenFile(pipe, os.O_RDWR|os.O_CREATE, os.ModeNamedPipe)
 		if err != nil {
 			log.Fatal("Open named pipe file error:", err)
 		}
