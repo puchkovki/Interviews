@@ -52,7 +52,9 @@ func echo(channel chan []string) {
 		case value := <-channel:
 			firstborn = append(firstborn, value...)
 		default:
-			fmt.Println(firstborn)
+			for _, value := range firstborn {
+				fmt.Println(value)
+			}
 			time.Sleep(time.Second)
 		}
 	}
