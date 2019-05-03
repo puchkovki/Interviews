@@ -60,6 +60,7 @@ func main() {
 		if err != nil {
 			log.Fatal("Open named pipe file error:", err)
 		}
+		writer := bufio.NewWriter(fifo)
 		for _, value := range argv {
 			writer.WriteString(value)
 		}
@@ -83,7 +84,6 @@ func main() {
 		fmt.Println("Successfully opened named pipe")
 	}
 	reader := bufio.NewReader(fifo)
-	writer := bufio.NewWriter(fifo)
 
 	channel := make(chan []string)
 
