@@ -73,7 +73,7 @@ func main() {
 		for _, value := range argv {
 			writer.WriteString(value)
 		}
-		writer.WriteByte('\n')
+		writer.WriteByte(0)
 		writer.Flush()
 		return
 	} else {
@@ -106,7 +106,7 @@ func main() {
 	go echo(channel)
 	channel <- argv
 	for {
-		line, err := reader.ReadString('\n')
+		line, err := reader.ReadString(0)
 		if err != nil {
 			if err == io.EOF {
 				break
