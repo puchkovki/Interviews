@@ -14,13 +14,23 @@ import (
 
 func Cleaner(sigs chan os.Signal, file, fifo *os.File) {
 	<-sigs
-	file.Close()
-	f, _ := file.Stat()
-	os.Remove(f.Name())
+	if file != nil {
+		file.Close()
+		f, _ := file.Stat()
+		os.Remove(f.Name())
+	} else {
+		fmt.Println("file == nil")
+		return
+	}
 
-	fifo.Close()
-	f, _ = fifo.Stat()
-	os.Remove(f.Name())
+	if fifo != nil {
+		fifo.Close()
+		f, _ := fifo.Stat()
+		os.Remove(f.Name())
+	} else {
+		fmt.Println("fifo == nil")
+		return
+	}
 
 	os.Exit(0)
 }
@@ -32,7 +42,7 @@ func echo(channel chan []string) {
 		case value := <-channel:
 			firstborn = append(firstborn, value...)
 		default:
-			fmt.Println(firstborn, "Okay")
+			fmt.Println(firstborn)
 			time.Sleep(time.Second)
 		}
 	}
@@ -101,9 +111,11 @@ func main() {
 				log.Fatal(err)
 			}
 		}
-		str := make([]string, 1)
-		str = append(str, line)
-		channel <- str
+		fmt.Println(line)
+		/*
+			str := make([]string, 1)
+			str = append(str, line)
+			channel <- str*/
 	}
 }
 
