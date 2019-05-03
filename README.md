@@ -46,6 +46,6 @@ https://golang.org/dl/
 
 Основная goroutine находится в ожидании поступления аргументов из глобального fifo файла.
 
-## Authors
+## Автор
 
-* **Puchkov Kyryll** — *Initial work* — [puchkovki](https://github.com/puchkovki)
+* **Puchkov Kyryll** — *Acronis* — [puchkovki](https://github.com/puchkovki)
