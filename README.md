@@ -1,10 +1,10 @@
 # Приложение-singleton echoloop
 
-Данная задача была предложена в виде вступительного испытания на Межфакультетскую кафедру теоретической и прикладной информатики 
+Данная задача была предложена в виде вступительного испытания на Межфакультетскую кафедру теоретической и прикладной информатики МФТИ. 
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+Данная программа была написана языке программирования Golang. Для поддержки Go терминалом следует скачать бинарные файлы по ссылке: https://golang.org/dl/
 
 ### Prerequisites
 
