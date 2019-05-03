@@ -65,7 +65,7 @@ func main() {
 	pipeName := "Echoloop.pipe"
 
 	//Opening file, if it doesn't exist — create one
-	mutex, err := os.OpenFile("echoloop.lock", os.O_RDWR|os.O_CREATE, 0600) //read, write, not execute
+	mutex, err := os.OpenFile("echoloop.lock", os.O_RDWR|os.O_CREATE, 0600)
 	if err != nil {
 		Cleaner(nil, mutex, nil)
 		log.Fatal("Cannot open the mutex file!", err)
