@@ -4,14 +4,14 @@
 
 ## Getting Started
 
-Данная программа была написана языке программирования Golang. Для поддержки Go терминалом следует скачать бинарные файлы по ссылке: https://golang.org/dl/
+Данная программа была написана языке программирования Golang. 
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+Для поддержки Go терминалом следует скачать бинарные файлы по ссылке:
 
 ```
-Give examples
+ https://golang.org/dl/
 ```
 
 ### Installing
