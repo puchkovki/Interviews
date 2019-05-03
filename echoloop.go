@@ -32,6 +32,8 @@ func Cleaner(sigs chan os.Signal, file, fifo *os.File) {
 		return
 	}
 
+	fmt.Println()
+
 	os.Exit(0)
 }
 
@@ -71,6 +73,7 @@ func main() {
 		for _, value := range argv {
 			writer.WriteString(value)
 		}
+		writer.WriteByte('\n')
 		writer.Flush()
 		return
 	} else {
@@ -111,11 +114,11 @@ func main() {
 				log.Fatal(err)
 			}
 		}
-		fmt.Println(line)
-		/*
-			str := make([]string, 1)
-			str = append(str, line)
-			channel <- str*/
+		/*fmt.Println(line)*/
+
+		str := make([]string, 1)
+		str = append(str, line)
+		channel <- str
 	}
 }
 
