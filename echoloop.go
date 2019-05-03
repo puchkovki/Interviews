@@ -2,14 +2,28 @@
 package main
 
 import (
-	//"bufio"
+	"bufio"
 	"fmt"
-	//"io"
+	"io"
 	"log"
 	"os"
+	"os/signal"
 	"syscall"
 	"time"
 )
+
+func Cleaner(sigs chan os.Signal, file, fifo *os.File) {
+	<-sigs
+	os.Close(file)
+	name := file.Stat().Name()
+	os.Remove(name)
+
+	os.Close(fifo)
+	name = fifo.Stat().Name()
+	os.Remove(name)
+	
+	exit 0
+}
 
 func echo(channel chan []string, quit chan bool) {
 	firstborn := make([]string, 0)
@@ -70,8 +84,14 @@ func main() {
 	reader := bufio.NewReader(fifo)
 
 	channel := make(chan []string)
-	quit := make(chan bool) //signal handler
-	//Handler(quit)
+
+	quit := make(chan bool, 1) //signal handler
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, os.Kill, os.Interrupt)
+	//Эта горутина будет заблокирована, пока мы не получим сигнал.
+	//При его получении, он будет выведен и мы оповестим программу о том, что она может прекратить свое выполнение.
+	go Cleaner(sigs, fifo, file)
+
 	go echo(channel, quit)
 	channel <- argv
 	for {
