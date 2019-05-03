@@ -1,31 +1,19 @@
 # Приложение-singleton echoloop
 
-Данная задача была предложена в виде вступительного испытания на Межфакультетскую кафедру теоретической и прикладной информатики МФТИ. 
+Данная задача была предложена в виде вступительного испытания на Межфакультетскую кафедру теоретической и прикладной информатики МФТИ.
+
+## Условие задачи
+
+Напишите простое приложение-singleton ```echoloop```. Само приложение выводит раз в секунду переданные ему параметры.
+
+ 
 
 ## Язык программирования Golang
 
-Данная программа была написана языке программирования Golang. Для поддержки Golang терминалом следует скачать бинарные файлы по ссылке:
+Данная программа была написана на языке программирования Golang. Для поддержки Golang терминалом следует скачать бинарные файлы по ссылке:
 https://golang.org/dl/
 
-### Installing
-
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
+## Идея решения
 
 Explain how to run the automated tests for this system
 
