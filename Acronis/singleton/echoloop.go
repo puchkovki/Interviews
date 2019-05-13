@@ -40,7 +40,6 @@ func Cleaner(sigs chan os.Signal, mutex, fifo *os.File) {
 	}
 
 	fmt.Println()
-	os.Exit(0)
 }
 
 //echo prints receined arguments
@@ -97,7 +96,7 @@ func main() {
 		return
 	}
 
-	//Deleting the fifo file of it already exists
+	//Deleting the fifo file if it already exists
 	os.Remove(pipeName)
 
 	//Creating a fifo file
@@ -107,7 +106,7 @@ func main() {
 	}
 
 	//Opening fifo file
-	fifo, err := os.OpenFile(pipeName, os.O_RDWR|os.O_CREATE, os.ModeNamedPipe) //ModeNamedPipe = named pipe(fifo)
+	fifo, err := os.OpenFile(pipeName, os.O_RDWR|os.O_CREATE, os.ModeNamedPipe)
 	if err != nil {
 		log.Fatal("Open named pipe file error:", err)
 	}
@@ -140,8 +139,6 @@ func main() {
 				log.Fatal(err)
 			}
 		}
-
-		fmt.Println(line)
 
 		str := make([]string, 1)
 		str[0] = line
